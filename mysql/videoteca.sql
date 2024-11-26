@@ -1,60 +1,135 @@
--- Creare un nuovo database
-CREATE DATABASE IF NOT EXISTS biblioteca;
-USE biblioteca;
+--mysqldump -u root videoteca > videoteca_BK.sql
 
--- Creare la tabella degli autori
-CREATE TABLE IF NOT EXISTS autori (
-    id_autore INT AUTO_INCREMENT PRIMARY KEY,
-    nome_autore VARCHAR(50) NOT NULL,
-    nazionalita VARCHAR(50),
-    data_nascita DATE,
-    data_morte DATE
-);
-
--- Inserire alcuni dati nella tabella degli autori
-INSERT INTO autori (nome_autore, nazionalita, data_nascita, data_morte)
-VALUES
-    ('Jane Austen', 'Inglese', '1775-12-16', '1817-07-18'),
-    ('George Orwell', 'Inglese', '1903-06-25', '1950-01-21'),
-    ('Harper Lee', 'Americana', '1926-04-28', '2016-02-19');
-
--- Verifico il corretto inserimento dei dati
-SELECT * FROM autori;
-
--- Creare un nuovo database
-CREATE DATABASE IF NOT EXISTS videoteca;
+--Crea Database
+--DROP DATABASE IF EXISTS videoteca;
+--CREATE DATABASE IF NOT EXISTS videoteca;
 USE videoteca;
 
--- Creare la tabella dei film
-CREATE TABLE IF NOT EXISTS film (
-    id_film INT AUTO_INCREMENT PRIMARY KEY,
-    titolo VARCHAR(100) NOT NULL,
-    anno_uscita YEAR,
-    durata_minuti INT,
-    genere VARCHAR (100),
-    id_regista INT,
-    FOREIGN KEY (id_regista) REFERENCES regista(id_regista)
+--Crea Tabella regista
+CREATE TABLE IF NOT EXISTS Regista (
+    ID_Regista INT AUTO_INCREMENT PRIMARY KEY,
+    Nome VARCHAR(30) NOT NULL,
+    Cognome VARCHAR(30) NOT NULL
 );
 
--- Inserire alcuni dati nella tabella dei film
-INSERT INTO film (titolo, anno_uscita, durata_minuti, id_regista)
-VALUES 
-  ('1984','1984','110','sci-fi',1),
-  ('titanic','1997','194','romantico',2),
-  ('la carica dei 101','1961','79','per famiglie',3),
-  ('peter pan','1953','76','per famiglie',4),
-  ('nemo','2003','100','per famiglie',5),
-
--- Creare la tabella degli autori
-CREATE TABLE IF NOT EXISTS autori (
-    id_autore INT AUTO_INCREMENT PRIMARY KEY,
-    nome_autore VARCHAR(50) NOT NULL,
-    nazionalita VARCHAR(50),
-    data_nascita DATE,
-    data_morte DATE
+--Crea Tabella produttore
+CREATE TABLE IF NOT EXISTS Produttore (
+    ID_Produttore INT AUTO_INCREMENT PRIMARY KEY,
+    Nome VARCHAR(30) NOT NULL,
+    Cognome VARCHAR(30) NOT NULL
 );
 
--- Inserire alcuni dati nella tabella degli autori  
-INSERT INTO autori (nome_autore, nazionalita, data_nascita, data_morte)
-VALUES
-('George Orwell', 'Inglese', '1903-06-25', '1950-01-21')
+
+--Crea Tabella categoria
+CREATE TABLE IF NOT EXISTS Categoria (
+    ID_Categoria INT AUTO_INCREMENT PRIMARY KEY,
+    Nome VARCHAR(30) NOT NULL
+);
+
+--Crea Tabella film
+CREATE TABLE IF NOT EXISTS Film (
+    ID_Film INT AUTO_INCREMENT PRIMARY KEY,
+    Titolo VARCHAR(100) NOT NULL,
+    Durata TIME,
+    Anno_Uscita YEAR NOT NULL,
+    ID_Regista INT NOT NULL,
+    ID_Produttore INT NOT NULL,
+    ID_Categoria INT NOT NULL,
+    FOREIGN KEY (ID_Regista) REFERENCES regista(ID_Regista) ON DELETE NO ACTION ON UPDATE CASCADE,
+    FOREIGN KEY (ID_Produttore) REFERENCES produttore(ID_Produttore) ON DELETE NO ACTION ON UPDATE CASCADE,
+    FOREIGN KEY (ID_Categoria) REFERENCES categoria(ID_Categoria) ON DELETE NO ACTION ON UPDATE CASCADE
+);
+
+
+--Crea tabella attore
+CREATE TABLE IF NOT EXISTS Attore (
+    ID_Attore INT AUTO_INCREMENT PRIMARY KEY,
+    Nome VARCHAR(50) NOT NULL,
+    Cognome VARCHAR(50)
+);
+
+--Crea tabella attori
+CREATE TABLE IF NOT EXISTS Attori (
+    ID_Attore INT NOT NULL,
+    ID_Film INT NOT NULL,
+    FOREIGN KEY (ID_Film) REFERENCES film(ID_Film) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (ID_Attore) REFERENCES attore(ID_Attore) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+--Crea tabella cliente
+CREATE TABLE IF NOT EXISTS Cliente (
+    ID_Cliente INT AUTO_INCREMENT PRIMARY KEY,
+    Nome VARCHAR(30) NOT NULL,
+    Cognome VARCHAR(30) NOT NULL
+);
+
+--Crea tabella acquisto
+ CREATE TABLE IF NOT EXISTS Acquisto (
+    ID_Acquisto INT AUTO_INCREMENT PRIMARY KEY,
+    Data_Pagamento DATE NOT NULL,
+    Prezzo FLOAT NOT NULL,
+    ID_Film INT NOT NULL,
+    ID_Cliente INT NOT NULL,
+    FOREIGN KEY (ID_Film) REFERENCES film(ID_Film) ON DELETE NO ACTION ON UPDATE CASCADE,
+    FOREIGN KEY (ID_Cliente) REFERENCES cliente(ID_Cliente) ON DELETE NO ACTION ON UPDATE CASCADE
+);
+
+
+--******  INSERIMENTO DATI  ******
+
+--Inserimento registi
+ INSERT INTO Regista (Nome, Cognome) VALUES
+ ('James', 'Cameron'),
+ ('Shane', 'Black'),
+ ('Enrico', 'Bellini');
+ 
+ --Inserimento produttori
+ INSERT INTO Produttore (Nome, Cognome) VALUES
+ ('James', 'Cameron'),
+ ('Jon', 'Landau'),
+ ('Stan', 'Lee');
+ 
+ --Inserimento categorie
+ INSERT INTO Categoria (Nome) VALUES
+ ('Fantascienza'),
+ ('Azione'),
+ ('Drammatico');
+ 
+ --Inserimento film
+ INSERT INTO Film (Titolo, Durata, Anno_Uscita, ID_Regista, ID_Produttore, ID_Categoria) VALUES
+ ('Avatar', '2:42', 2009, 1, 1, 1),
+ ('Titanic', '3:15', 1997, 1, 2, 3),
+ ('Ironman 3', '2:10', 2013, 2, 3, 2);
+ 
+ --Inserimento premi
+ INSERT INTO Attore (Nome, Cognome) VALUES
+ ('Zoe', 'Saldana'),
+ ('Sam', 'Worthington'),
+ ('Kate', 'Winslet'),
+ ('Leonardo','DiCaprio'),
+ ('Robert', 'Downey Jr.'),
+ ('Ben', 'Kingsley');
+ 
+ --Inserimento attori
+ INSERT INTO Attori (ID_Attore, ID_Film) VALUES
+ (1, 1),
+ (2, 1),
+ (3, 2),
+ (4, 2),
+ (5, 3),
+ (6, 3);
+
+ --Inserimento clienti
+ INSERT INTO Cliente (Nome, Cognome) VALUES
+ ('Mario', 'Rossi'),
+ ('Giorgio', 'Bianchi'),
+ ('Luigi', 'Verdi');
+ 
+ --Inserimento acquisti
+ INSERT INTO Acquisto (ID_Film, ID_Cliente, Prezzo, Data_Pagamento) VALUES
+ (1, 1, 100, '2024-5-27'),
+ (2, 2, 150, '2024-5-28'),
+ (3, 3, 200, '2024-5-28');
+ 
+
+ 
