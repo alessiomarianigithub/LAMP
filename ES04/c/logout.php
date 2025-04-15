@@ -1,4 +1,4 @@
 <?php 
-    require 'funzioni.php';
-    termina();
+    require 'loginLib.php';
+    logout();
 ?>

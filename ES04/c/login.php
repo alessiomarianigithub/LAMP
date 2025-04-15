@@ -1,88 +1,95 @@
 <?php
-    session_start();
+session_start();
 
-    if($_SERVER['REQUEST_METHOD'] == 'GET') 
-    {
-        $_SESSION['Tentativi'] = 3 ;
-        $_SESSION['tempo'] = null;
-    }
 
-    require 'funzioni.php';
+if($_SERVER['REQUEST_METHOD'] == 'GET') {
+    $_SESSION['tentativi'] = 5;
+    $_SESSION['timestamp'] = null;
+}
 
-    [$rest_val, $rest_mess] = session_control();
+require 'loginLib.php';
 
-    if($rest_val) 
-    {
-        $link = 'Location: ';
-        $link .= $_GET['from'] ?? 'index.php';
-    
-        header($link);
-        die();
-    }
+[$sessionRetval, $sessionRetmsg] = checkSession();
 
-    $error_mess = $_GET['errore'] ?? '';
+if($sessionRetval) {
+    $link = 'Location: ';
+    $link .= $_GET['from'] ?? 'index.php';
 
-    [$rest_val, $rest_mess] = login_control($username, $password);
+    header($link);
+    die();
+}
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && 
-    (!isset($_SESSION['tempo']) || time() - $_SESSION['tempo'] >= 60)) 
-    {
+$err_msg = $_GET['error'] ?? '';
 
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+if($_SERVER['REQUEST_METHOD'] == 'POST' AND (!$_SESSION['timestamp'] OR $_SESSION['timestamp'] + 60 < $_SERVER['REQUEST_TIME'])) {
 
-    [$rest_val, $rest_mess] = login_control($username, $password);
+    $username = $_POST['username'] ?? '';
+    $password = $_POST['password'] ?? '';
 
-    if ($rest_val)
-     {
-        session_unset(); 
+    [$retval, $retmsg] = login_check($username, $password);
+
+    if($retval) {
+        session_unset();
 
         $_SESSION['username'] = $username;
 
-        header('Location: ' . ($_POST['from'] ?? 'index.php'));
+        $link = 'Location: ';
+        $link .= $_POST['from'] != null ? $_POST['from'] : 'index.php';
+
+        header($link);
+
         die();
-}else {
-            $error_mess = $rest_mess;
-            $_SESSION['Tentativi']--;
-            $error_mess .= '. Tentativi rimasti: '.$_SESSION['Tentativi'];
-            if($_SESSION['Tentativi'] == 0) {
-                $error_mess = 'Tentativi esauriti, riprova piu tardi';
-                $_SESSION['tempo'] = $_SERVER['REQUEST_TIME'];
-            }
-        }
     }
-    else if ($_SESSION['timestamp']) 
-    {
-        $timeLeft = $_SESSION['timestamp'] + 60 - $_SERVER['REQUEST_TIME'];
-    
-        if ($timeLeft <= 0) 
-        {
-            $_SESSION['prove'] = 3;
-            $_SESSION['timestamp'] = null;
-        } else {
-            $err_mess = "Account bloccato. Riprova tra $timeLeft secondi";
+    else {
+        $err_msg = $retmsg;
+        $_SESSION['tentativi']--;
+        $err_msg .= '. Tentativi rimasti: '.$_SESSION['tentativi'];
+        if($_SESSION['tentativi'] == 0) {
+            $err_msg = 'Tentativi esauriti, account bloccato per 1 minuto';
+            $_SESSION['timestamp'] = $_SERVER['REQUEST_TIME'];
         }
     }
     
+}
+else if($_SESSION['timestamp']) {
+
+    if($_SESSION['timestamp'] + 60 < $_SERVER['REQUEST_TIME']) {
+        $_SESSION['tentativi'] = 5;
+        $_SESSION['timestamp'] = null;
+    }
+    else $err_msg = 'Account Bloccato. Riprova tra ' . $_SESSION['timestamp'] + 60 - $_SERVER['REQUEST_TIME'] . " secondi";
+
+}
+
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
 </head>
 <body>
-    <div id="login-container">
+
         <h2>Login</h2>
-        <div id="error-container"><?= $err_mess ?></div>
-        <form action="<?php ($_SERVER['PHP_SELF']) ?>" method="POST">
-            <input type="text" name="utente" id="utente" placeholder="utente" required>
+
+        <?=$err_msg?>
+
+        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+            
+            <input type="text" name="username" id="username" placeholder="Username">
             <br>
-            <input type="password" name="password" id="password" placeholder="Password" required>
+            
+            <input type="password" name="password" id="password" placeholder="Password">
             <br>
             <input type="submit" value="Login" id="login-button">
-            <input type="hidden" name="from" value="<?=$_GET['from'] ?? ''?>">
+
+            <input type="hidden" name="from" value="<?=$_GET['from'] ?? null?>" > 
         </form>
+
     </div>
 </body>
 </html>

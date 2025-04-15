@@ -1,21 +1,23 @@
 <?php
     session_start();
 
-    require 'funzioni.php';
+    require 'loginLib.php';
 
-    $link = collegamento();
-    
+    $link = setLink();
+
 ?>
-
 <!DOCTYPE html>
 <html lang="it">
-    <head>
-        <title>Pagina di Benvenuto</title>
-    </head>
-    <body>
-        <h1>Benvenuto\a</h1>
-        <a href="riservata.php">Riservata</a>
-        <br>
-        <?php echo $link; ?>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Pagina di Benvenuto</title>
+</head>
+<body>
+    <h1>Benvenuto!</h1>
+    <a href="riservata.php">Accedi alla pagina riservata</a>
+    <br>
+    <?php echo $link; ?>
+</body>
 </html>

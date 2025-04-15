@@ -1,24 +1,23 @@
-<h3>Benvenuto</h3>
-
 <?php
     session_start();
-    if(!isset($_SESSION['username']))
-    { $url = 'login.php?error=Devi prima fare accesso&from=';
-        $url .= basename($_SERVER['PHP_SELF']);
-        header("Location: $url");
-        die();
-    }
-    echo "<h3>Benvenuto ". $_SESSION['username'] . "</h3>";
-?>
 
+    require 'loginLib.php';
+
+    $link = setLink();
+
+?>
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-    <title>Pagina Riservata</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Pagina di Benvenuto</title>
 </head>
 <body>
-    <a href="index.php">Index</a>
+    <h1>Benvenuto!</h1>
+    <a href="riservata.php">Accedi alla pagina riservata</a>
     <br>
-    <a href="logout.php">Logout</a>
+    <?php echo $link; ?>
 </body>
 </html>
