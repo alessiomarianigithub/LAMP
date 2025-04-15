@@ -51,28 +51,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </form>
 </body>
 </html>
-
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Pagina_di_Login</title>
-</head>
-<body>
-
-<h3>Benvenuto!</h3>
-
-    <?=$mes_err?>
-    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
-        <label for="username">username</label>
-        <input type="text" name="username" id="username">
-        <br>
-        <label for="password">password</label>
-        <input type="password" name="password" id="password">
-        <br>
-        <input type="submit" value="Accedi">
-
-        <input type="hidden" name="from" value="<?=$_GET['from'] ?? null ?>" > 
-    </form>
-</body>
-</html>
