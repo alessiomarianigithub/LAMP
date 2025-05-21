@@ -8,7 +8,7 @@ $utente = $_SESSION['username'] ?? 'Ospite';
 // Creazione dei link in funzione dell'utente Ospite o Autenticato 
 $html_link .= '<a href="login.php">Pagina Login</a>';
 $html_link2 .= '<a href="riservata.php">Pagina Riservata</a>';
-$html_link3 .= '<a href="connessione.php">Pagina Riservata</a>';
+$html_link3 .= '<a href="connessione.php">test</a>';
 ?>
 <!DOCTYPE html>
 <html>
